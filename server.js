@@ -18,9 +18,17 @@ app.get("/tasks", (req, res) => {
   res.json(tasks);
 });
 app.post("/tasks", (req, res) => {
+  const { title } = req.body;
+
+  if (typeof title !== "string" || title.trim() === "") {
+    return res.status(400).json({
+      message: "Title is required and must be a non-empty string",
+    });
+  }
+
   const newTask = {
-    id: tasks.length + 1,
-    title: req.body.title,
+    id: tasks.length ? Math.max(...tasks.map((task) => task.id)) + 1 : 1,
+    title: title.trim(),
     completed: false,
   };
 
@@ -28,6 +36,7 @@ app.post("/tasks", (req, res) => {
 
   res.status(201).json(newTask);
 });
+
 app.put("/tasks/:id", (req, res) => {
   const taskId = Number(req.params.id);
 
@@ -40,15 +49,28 @@ app.put("/tasks/:id", (req, res) => {
   }
 
   if (req.body.title !== undefined) {
-    task.title = req.body.title;
+    if (typeof req.body.title !== "string" || req.body.title.trim() === "") {
+      return res.status(400).json({
+        message: "Title must be a non-empty string",
+      });
+    }
+
+    task.title = req.body.title.trim();
   }
 
   if (req.body.completed !== undefined) {
+    if (typeof req.body.completed !== "boolean") {
+      return res.status(400).json({
+        message: "Completed must be true or false",
+      });
+    }
+
     task.completed = req.body.completed;
   }
 
   res.json(task);
 });
+
 app.delete("/tasks/:id", (req, res) => {
   const taskId = Number(req.params.id);
 
