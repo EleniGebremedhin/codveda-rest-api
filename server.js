@@ -40,8 +40,13 @@ app.post("/tasks", (req, res) => {
 app.put("/tasks/:id", (req, res) => {
   const taskId = Number(req.params.id);
 
-  const task = tasks.find((task) => task.id === taskId);
+  if (!Number.isInteger(taskId) || taskId <= 0) {
+    return res.status(400).json({
+      message: "Task ID must be a positive integer",
+    });
+  }
 
+  const task = tasks.find((task) => task.id === taskId);
   if (!task) {
     return res.status(404).json({
       message: "Task not found",
@@ -74,6 +79,12 @@ app.put("/tasks/:id", (req, res) => {
 app.delete("/tasks/:id", (req, res) => {
   const taskId = Number(req.params.id);
 
+  if (!Number.isInteger(taskId) || taskId <= 0) {
+    return res.status(400).json({
+      message: "Task ID must be a positive integer",
+    });
+  }
+
   const taskIndex = tasks.findIndex((task) => task.id === taskId);
 
   if (taskIndex === -1) {
@@ -89,6 +100,7 @@ app.delete("/tasks/:id", (req, res) => {
     task: deletedTask[0],
   });
 });
+
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
