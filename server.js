@@ -18,7 +18,7 @@ app.get("/tasks", (req, res) => {
   res.json(tasks);
 });
 app.post("/tasks", (req, res) => {
-  const { title } = req.body;
+  const title = req.body?.title;
 
   if (typeof title !== "string" || title.trim() === "") {
     return res.status(400).json({
