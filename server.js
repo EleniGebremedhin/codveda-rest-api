@@ -100,7 +100,15 @@ app.delete("/tasks/:id", (req, res) => {
     task: deletedTask[0],
   });
 });
+app.use((err, req, res, next) => {
+  if (err instanceof SyntaxError && err.status === 400 && "body" in err) {
+    return res.status(400).json({
+      message: "Invalid JSON format. Please check your request body.",
+    });
+  }
 
+  next(err);
+});
 app.listen(PORT, () => {
   console.log(`Server is running on port ${PORT}`);
 });
